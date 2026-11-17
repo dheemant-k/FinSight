@@ -12,25 +12,25 @@
 ### 1. Existing Project Assets
 The repository contains a fully established foundational architecture, configuration layer, dataset profiling engine, and test framework:
 - **Project Documentation & Blueprint:**
-  - [`FinSight_Project_Brief.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/FinSight_Project_Brief.md): Complete product brief with objective, technology stack, ML methodology, rule engine specs, and Power BI page outlines.
-  - [`docs/architecture.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/docs/architecture.md): Layered architecture blueprint (Ingestion -> Validation -> Rule Scoring -> PostgreSQL -> Power BI).
-  - [`docs/data-dictionary.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/docs/data-dictionary.md): Schema specifications (staging, facts, dimensions, quarantine).
-  - [`docs/risk-methodology.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/docs/risk-methodology.md): Explainable risk framework, scoring rules, and cutoffs (0–29 Low, 30–69 Medium, 70–100 High).
-  - [`docs/findings-and-limitations.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/docs/findings-and-limitations.md): Operational boundaries and synthetic data caveats.
+  - [`docs/project-brief.md`](project-brief.md): Complete product brief with objective, technology stack, ML methodology, rule engine specs, and Power BI page outlines.
+  - [`docs/architecture.md`](architecture.md): Layered architecture blueprint (Ingestion -> Validation -> Rule Scoring -> PostgreSQL -> Power BI).
+  - [`docs/data-dictionary.md`](data-dictionary.md): Schema specifications (staging, facts, dimensions, quarantine).
+  - [`docs/risk-methodology.md`](risk-methodology.md): Explainable risk framework, scoring rules, and cutoffs (0–29 Low, 30–69 Medium, 70–100 High).
+  - [`docs/findings-and-limitations.md`](findings-and-limitations.md): Operational boundaries and synthetic data caveats.
 - **Configuration Layer:**
-  - [`config/pipeline.yaml`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/config/pipeline.yaml): Batch chunk size (`10,000`), validation rules, staging and fact table names.
-  - [`config/risk_rules.yaml`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/config/risk_rules.yaml): 5 explainable risk scoring rules (`RULE_001_HIGH_VALUE` through `RULE_005_CONSECUTIVE_DECLINES`).
+  - [`config/pipeline.yaml`](../config/pipeline.yaml): Batch chunk size (`10,000`), validation rules, staging and fact table names.
+  - [`config/risk_rules.yaml`](../config/risk_rules.yaml): placeholder risk rules at the time of this Stage 1 audit (since replaced by the 4 implemented PaySim rules).
 - **Data Engineering & Profiling:**
-  - [`src/finsight/profile_dataset.py`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/src/finsight/profile_dataset.py): Memory-safe, chunked (default 250k rows) dataset profiling tool with streaming stats, entity recurrence analysis, balance integrity audits, and JSON/CLI reporting.
-  - [`reports/data_quality/dataset_profile.json`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/reports/data_quality/dataset_profile.json): Complete full-dataset profiling report covering all 6,362,620 rows.
-  - [`reports/data_quality/dataset_profile_sample.json`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/reports/data_quality/dataset_profile_sample.json): Benchmark sample profile.
+  - [`src/finsight/profile_dataset.py`](../src/finsight/profile_dataset.py): Memory-safe, chunked (default 250k rows) dataset profiling tool with streaming stats, entity recurrence analysis, balance integrity audits, and JSON/CLI reporting.
+  - [`reports/data_quality/dataset_profile.json`](../reports/data_quality/dataset_profile.json): Complete full-dataset profiling report covering all 6,362,620 rows.
+  - [`reports/data_quality/dataset_profile_sample.json`](../reports/data_quality/dataset_profile_sample.json): Benchmark sample profile.
 - **SQL Warehouse Definition:**
-  - [`sql/schema/01_schema_definition.sql`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/sql/schema/01_schema_definition.sql): PostgreSQL 15+ DDL for `stg_transactions`, `dim_customers`, `dim_merchants`, `fct_transactions`, and `fct_risk_evaluations`.
+  - [`sql/schema/01_schema_definition.sql`](../sql/schema/01_schema_definition.sql): PostgreSQL 15+ DDL for `stg_transactions`, `dim_customers`, `dim_merchants`, `fct_transactions`, and `fct_risk_evaluations`.
 - **Automated Test Suite:**
-  - [`tests/test_dataset_audit.py`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/tests/test_dataset_audit.py): 9 schema contract, class imbalance, and balance integrity assertions.
+  - [`tests/test_dataset_audit.py`](../tests/test_dataset_audit.py): 9 schema contract, class imbalance, and balance integrity assertions.
 
 ### 2. Verified to Work
-- [x] **Dataset Accessibility:** Raw CSV [`PS_20174392719_1491204439457_log.csv`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/PS_20174392719_1491204439457_log.csv) (470.67 MB / 493.5 MB uncompressed) is present in the workspace root and successfully stream-read.
+- [x] **Dataset Accessibility:** Raw CSV [`PS_20174392719_1491204439457_log.csv`](../PS_20174392719_1491204439457_log.csv) (470.67 MB / 493.5 MB uncompressed) is present in the workspace root and successfully stream-read.
 - [x] **Profiling Script Execution:** `py src/finsight/profile_dataset.py --max-rows 1000` ran cleanly in 0.09s, verifying chunking, schema validation, summary output, and JSON export.
 - [x] **Automated Test Suite:** `py -m pytest tests/` executed with **9 passed in 0.13s** (`tests/test_dataset_audit.py`).
 - [x] **Python Environment & Core Data Stack:** Python 3.14.3 with `pandas` (3.0.1), `numpy` (2.4.2), `scikit-learn` (1.8.0), `SQLAlchemy` (2.0.49), `pydantic` (2.13.0), `pyyaml` (6.0.3), and `pytest` (9.1.1) is operational.
@@ -46,12 +46,12 @@ The repository contains a fully established foundational architecture, configura
 ## B. Dataset Status & Profiling Findings
 
 ### 1. File Status
-- **Location:** `c:\Users\samit\OneDrive\Desktop\FinSight\PS_20174392719_1491204439457_log.csv`
+- **Location:** `PS_20174392719_1491204439457_log.csv`
 - **File Size:** 470.67 MB (493,534,783 bytes)
 - **Readability:** Fully verified via chunked pandas parser.
 
 ### 2. Profiling Status
-Full-dataset profiling is **complete** and stored in [`reports/data_quality/dataset_profile.json`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/reports/data_quality/dataset_profile.json). It processed 6,362,620 rows across 26 chunks in 101.3 seconds. No background profiling process is running.
+Full-dataset profiling is **complete** and stored in [`reports/data_quality/dataset_profile.json`](../reports/data_quality/dataset_profile.json). It processed 6,362,620 rows across 26 chunks in 101.3 seconds. No background profiling process is running.
 
 ### 3. Ground-Truth Data Metrics (from Completed Full Profile)
 - **Total Records:** `6,362,620`
@@ -89,7 +89,7 @@ Full-dataset profiling is **complete** and stored in [`reports/data_quality/data
 
 ### 1. Runtime Environment
 - **Operating System:** Windows 11 (PowerShell)
-- **Python Binary:** Python 3.14.3 (`C:\Users\samit\AppData\Local\Python\bin\python.exe`, accessible via standard Windows launcher `py`)
+- **Python Binary:** Python 3.14.3 (accessible via the standard Windows launcher `py`)
 - *Execution Note:* The default Windows `python.exe` alias in `AppData\Local\Microsoft\WindowsApps` points to the Microsoft Store redirection stub. Running commands via `py` or the direct Python binary path ensures consistent execution.
 
 ### 2. Dependency Status

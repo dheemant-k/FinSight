@@ -623,6 +623,6 @@
   },
   "xgboost_catboost_status": "Not installed in Python 3.14 on Windows; excluded per environment constraint",
   "figures": {
-    "benchmark_pr_curves": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\reports\\ml_improvement\\figures\\benchmark_pr_curves.png"
+    "benchmark_pr_curves": "reports/ml_improvement/figures/benchmark_pr_curves.png"
   }
 }

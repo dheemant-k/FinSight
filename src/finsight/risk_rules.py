@@ -28,6 +28,22 @@ import pandas as pd
 
 logger = logging.getLogger("finsight.risk_rules")
 
+# Canonical rules file shipped with the repository.
+DEFAULT_RULES_PATH: Path = Path(__file__).resolve().parents[2] / "config" / "risk_rules.yaml"
+
+# Rule ids that have an evaluator implemented in RiskEngine. A YAML rule whose id is
+# not listed here would be silently ignored, so it is rejected at load time instead.
+SUPPORTED_RULE_IDS: Tuple[str, ...] = (
+    "RULE_001_HIGH_VALUE",
+    "RULE_002_DRAINAGE_RAIL",
+    "RULE_003_OVERNIGHT_DRAINAGE",
+    "RULE_004_LARGE_ROUND_AMOUNT",
+)
+
+
+class RiskConfigError(ValueError):
+    """Raised when a risk rules configuration file is malformed or unsupported."""
+
 # Supported risk tiers and operational action recommendations
 RISK_TIERS: Tuple[str, ...] = ("LOW", "MEDIUM", "HIGH")
 RECOMMENDED_ACTIONS: Dict[str, str] = {
@@ -186,13 +202,95 @@ class RiskEngineConfig:
             rules=rules,
         )
 
+    @classmethod
+    def from_yaml(cls, path: Union[str, Path] = DEFAULT_RULES_PATH) -> RiskEngineConfig:
+        """Load scoring framework and rule definitions from a YAML file.
+
+        Raises:
+            RiskConfigError: If the file is missing required keys, has inconsistent
+                tier boundaries, or declares a rule id with no implemented evaluator.
+        """
+        import yaml
+
+        path = Path(path)
+        try:
+            with path.open("r", encoding="utf-8") as fh:
+                raw = yaml.safe_load(fh) or {}
+        except FileNotFoundError as exc:
+            raise RiskConfigError(f"Risk rules file not found: {path}") from exc
+
+        try:
+            framework = raw["scoring_framework"]
+            tiers = framework["risk_tiers"]
+            low_max = int(tiers["low"]["max"])
+            medium_min = int(tiers["medium"]["min"])
+            medium_max = int(tiers["medium"]["max"])
+            high_min = int(tiers["high"]["min"])
+            raw_rules = raw["rules"]
+        except (KeyError, TypeError) as exc:
+            raise RiskConfigError(f"{path}: missing required key {exc}") from exc
+
+        if medium_min != low_max + 1 or high_min != medium_max + 1:
+            raise RiskConfigError(
+                f"{path}: risk tiers must be contiguous "
+                f"(low.max={low_max}, medium={medium_min}-{medium_max}, high.min={high_min})."
+            )
+
+        rules: List[RuleDefinition] = []
+        seen: set = set()
+        for entry in raw_rules or []:
+            try:
+                rule_id = str(entry["id"])
+                rule = RuleDefinition(
+                    rule_id=rule_id,
+                    name=str(entry["name"]),
+                    description=str(entry.get("description", "")),
+                    category=str(entry.get("category", "")),
+                    severity=str(entry.get("severity", "")),
+                    risk_points=int(entry["risk_points"]),
+                    enabled=bool(entry.get("enabled", True)),
+                    parameters=dict(entry.get("parameters") or {}),
+                    rationale=str(entry.get("rationale", "")).strip(),
+                    limitations=str(entry.get("limitations", "")).strip(),
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise RiskConfigError(f"{path}: invalid rule entry {entry!r}: {exc}") from exc
+
+            if rule_id not in SUPPORTED_RULE_IDS:
+                raise RiskConfigError(
+                    f"{path}: rule '{rule_id}' has no evaluator in risk_rules.py "
+                    f"(supported: {', '.join(SUPPORTED_RULE_IDS)})."
+                )
+            if rule_id in seen:
+                raise RiskConfigError(f"{path}: duplicate rule id '{rule_id}'.")
+            seen.add(rule_id)
+            rules.append(rule)
+
+        return cls(
+            baseline_score=int(framework.get("baseline_score", 0)),
+            max_score=int(framework.get("max_score", 100)),
+            low_cutoff=low_max,
+            medium_cutoff=medium_max,
+            rules=rules,
+        )
+
 
 class RiskEngine:
     """Deterministic, explainable transaction risk evaluation engine."""
 
     def __init__(self, config: Optional[RiskEngineConfig] = None) -> None:
-        """Initialize engine with provided or default configuration."""
-        self.config = config or RiskEngineConfig.default_config()
+        """Initialize engine with the given config, else the repository's rules YAML.
+
+        Falls back to the built-in default rule set only if the YAML file is absent
+        (e.g. when the package is used outside the repository checkout).
+        """
+        if config is not None:
+            self.config = config
+        elif DEFAULT_RULES_PATH.exists():
+            self.config = RiskEngineConfig.from_yaml(DEFAULT_RULES_PATH)
+        else:
+            logger.warning("Rules file %s not found; using built-in defaults.", DEFAULT_RULES_PATH)
+            self.config = RiskEngineConfig.default_config()
 
     def get_tier(self, score: int) -> str:
         """Map composite risk score to operational risk tier."""

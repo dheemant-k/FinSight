@@ -31,7 +31,7 @@ As of Stage 1, the FinSight repository has been initialized with engineering sta
 ### 2.2. Single-Node In-Memory Scalability
 - **Limitation**: Tabular data transformations in the MVP rely on Python and pandas. Data processing takes place in single-node system memory.
 - **Impact**: Batch files larger than available RAM (typically > 4GB) will require chunked iterator processing or migration to an out-of-core engine like Polars, DuckDB, or PySpark.
-- **Mitigation in MVP**: `config/pipeline.yaml` specifies a chunked processing model (`batch_chunk_size: 10000`) to maintain a predictable memory footprint.
+- **Mitigation in MVP**: `pipeline.py` streams the dataset in chunks (default 250,000 rows, `--chunk-size`) to keep memory use predictable.
 
 ### 2.3. Rule-Based Scoring vs. Machine Learning
 - **Limitation**: The initial risk engine relies on deterministic, expert-crafted business rules with additive weights rather than statistical machine learning.

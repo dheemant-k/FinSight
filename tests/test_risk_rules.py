@@ -235,3 +235,91 @@ def test_evaluate_against_ground_truth_min_score(engine: RiskEngine):
     assert metrics["confusion_matrix"]["true_positives"] == 2
     assert metrics["confusion_matrix"]["false_positives"] == 0
     assert metrics["metrics"]["recall"] == 1.0
+
+
+# ------------------------------------------------------------------------------
+# YAML configuration loading
+# ------------------------------------------------------------------------------
+
+from pathlib import Path
+
+import yaml
+
+from finsight.risk_rules import DEFAULT_RULES_PATH, RiskConfigError
+
+
+def _load_raw_rules() -> dict:
+    with DEFAULT_RULES_PATH.open("r", encoding="utf-8") as fh:
+        return yaml.safe_load(fh)
+
+
+def _write_yaml(tmp_path: Path, data: dict) -> Path:
+    path = tmp_path / "rules.yaml"
+    path.write_text(yaml.safe_dump(data), encoding="utf-8")
+    return path
+
+
+def test_repository_yaml_matches_builtin_defaults():
+    """The shipped YAML must describe exactly the built-in default rule set."""
+    from_yaml = RiskEngineConfig.from_yaml(DEFAULT_RULES_PATH)
+    default = RiskEngineConfig.default_config()
+
+    assert from_yaml.low_cutoff == default.low_cutoff
+    assert from_yaml.medium_cutoff == default.medium_cutoff
+    assert from_yaml.max_score == default.max_score
+    assert [r.rule_id for r in from_yaml.rules] == [r.rule_id for r in default.rules]
+    for y_rule, d_rule in zip(from_yaml.rules, default.rules):
+        assert y_rule.risk_points == d_rule.risk_points
+        assert y_rule.enabled == d_rule.enabled
+        assert y_rule.parameters == d_rule.parameters
+
+
+def test_engine_default_loads_repository_yaml():
+    engine = RiskEngine()
+    assert [r.rule_id for r in engine.config.rules] == [
+        r.rule_id for r in RiskEngineConfig.from_yaml(DEFAULT_RULES_PATH).rules
+    ]
+
+
+def test_yaml_threshold_change_changes_scoring(tmp_path: Path):
+    """Editing a threshold in YAML must change engine behaviour without code edits."""
+    data = _load_raw_rules()
+    for rule in data["rules"]:
+        if rule["id"] == "RULE_001_HIGH_VALUE":
+            rule["parameters"]["threshold_amount"] = 1000.0
+    engine = RiskEngine(RiskEngineConfig.from_yaml(_write_yaml(tmp_path, data)))
+
+    result = engine.evaluate_transaction({"amount": 5000.0, "type": "PAYMENT", "transaction_hour": 12})
+    assert "RULE_001_HIGH_VALUE" in result.triggered_rules
+    assert RiskEngine().evaluate_transaction(
+        {"amount": 5000.0, "type": "PAYMENT", "transaction_hour": 12}
+    ).triggered_rules == []
+
+
+def test_yaml_disabled_rule_is_skipped(tmp_path: Path):
+    data = _load_raw_rules()
+    for rule in data["rules"]:
+        if rule["id"] == "RULE_002_DRAINAGE_RAIL":
+            rule["enabled"] = False
+    engine = RiskEngine(RiskEngineConfig.from_yaml(_write_yaml(tmp_path, data)))
+    result = engine.evaluate_transaction({"amount": 100.0, "type": "TRANSFER", "transaction_hour": 12})
+    assert result.triggered_rules == []
+
+
+def test_yaml_unknown_rule_id_rejected(tmp_path: Path):
+    data = _load_raw_rules()
+    data["rules"].append({"id": "RULE_999_VELOCITY", "name": "Velocity", "risk_points": 10})
+    with pytest.raises(RiskConfigError, match="no evaluator"):
+        RiskEngineConfig.from_yaml(_write_yaml(tmp_path, data))
+
+
+def test_yaml_non_contiguous_tiers_rejected(tmp_path: Path):
+    data = _load_raw_rules()
+    data["scoring_framework"]["risk_tiers"]["medium"]["min"] = 40
+    with pytest.raises(RiskConfigError, match="contiguous"):
+        RiskEngineConfig.from_yaml(_write_yaml(tmp_path, data))
+
+
+def test_yaml_missing_file_rejected(tmp_path: Path):
+    with pytest.raises(RiskConfigError, match="not found"):
+        RiskEngineConfig.from_yaml(tmp_path / "missing.yaml")

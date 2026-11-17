@@ -3,7 +3,7 @@
 **Document Status:** Final Frozen  
 **Date:** 2026-10-19  
 **Stage:** Phase E — Align SHAP with the Final Model  
-**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib)  
+**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib)  
 **Explainer Backend:** TreeSHAP (`shap.TreeExplainer`)  
 
 ---
@@ -12,7 +12,7 @@
 
 This report establishes the complete verification, mathematical additivity proof, and governance guidelines for the Explainable AI (XAI) layer in FinSight. 
 
-All explainability artifacts in [`reports/explainability/`](file:///reports/explainability) have been regenerated directly from the authoritative frozen champion model ([`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib)) across an unseen holdout sample ($N = 2,000$, `step >= 551`, seed 42).
+All explainability artifacts in [`reports/explainability/`](../explainability) have been regenerated directly from the authoritative frozen champion model ([`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib)) across an unseen holdout sample ($N = 2,000$, `step >= 551`, seed 42).
 
 ### Key Verification Findings:
 1. **Mathematical Additivity Proven:** TreeSHAP exact efficiency / additivity was validated on the raw decision margin (log-odds $\text{logit}(p) = \ln\frac{p}{1-p}$), with a maximum reconstruction error of **$1.07 \times 10^{-14}$** (well within machine precision $\epsilon \approx 10^{-12}$).
@@ -21,13 +21,13 @@ All explainability artifacts in [`reports/explainability/`](file:///reports/expl
    - **Payment Rails (5 features):** **$88.88\%$** of total model importance.
    - **Monetary Magnitude (`amount` + `log1p_amount`):** **$6.18\%$** of total model importance.
    - **Diurnal Time (`transaction_hour`):** **$4.95\%$** of total model importance.
-4. **Complete Multi-Artifact Synchronization:** Bitwise agreement verified between [`global_shap_importance.csv`](file:///reports/explainability/global_shap_importance.csv), [`explainability_metadata.json`](file:///reports/explainability/explainability_metadata.json), [`local_explanations.json`](file:///reports/explainability/local_explanations.json), and [`explainability_report.md`](file:///reports/explainability/explainability_report.md).
+4. **Complete Multi-Artifact Synchronization:** Bitwise agreement verified between [`global_shap_importance.csv`](../explainability/global_shap_importance.csv), [`explainability_metadata.json`](../explainability/explainability_metadata.json), [`local_explanations.json`](../explainability/local_explanations.json), and [`explainability_report.md`](../explainability/explainability_report.md).
 
 ---
 
 ## 2. Experimental Setup & Sampling Provenance
 
-- **Model Artifact:** [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib)
+- **Model Artifact:** [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib)
 - **Estimator Class:** `HistGradientBoostingClassifier` (50 trees, max depth unconstrained, max leaf nodes 31, balanced class weights).
 - **Target Feature List & Order (8 features):**
   `['amount', 'log1p_amount', 'transaction_hour', 'type_CASH_IN', 'type_CASH_OUT', 'type_DEBIT', 'type_PAYMENT', 'type_TRANSFER']`

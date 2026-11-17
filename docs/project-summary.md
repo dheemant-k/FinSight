@@ -1,6 +1,6 @@
 # FinSight — Executive Project Summary
 
-> **Project status as of 19 October 2026** · Based on the project brief and implementation reports shared in this conversation
+> **Project status as of 19 October 2026.** Figures come from the reports and artifacts committed in this repository.
 
 ## Executive overview
 
@@ -12,14 +12,14 @@ The current implementation uses Python and pandas for data processing, PostgreSQ
 
 **Current assessment:** the data pipeline and SQL analytics are substantially developed, and a first ML experimentation cycle has identified a promising candidate model. The project is not yet a fully finished product, and its final model performance and operational claims need further validation.
 
-| Project indicator | Current reported status |
+| Project indicator | Current status |
 |---|---|
 | Source dataset | 6.36 million transaction records |
 | Fraud-labelled records | 8,213 (approximately 0.1291%) |
-| SQL analytics | Four views reported as deployed and reconciled |
-| ML experiments | 14 configurations reported in the latest sprint |
+| SQL analytics | Four analytical views deployed and reconciled |
+| ML experiments | 14 configurations in the latest sprint |
 
-*These figures are drawn from the project's reports. They have not all been independently reproduced in this conversation.*
+*Figures are taken from the generated reports under `reports/`; rerun the pipeline to reproduce them.*
 
 ## 1. The problem FinSight is trying to solve
 
@@ -49,7 +49,7 @@ The project is a **historical-data prototype**, not a live payment-processing or
 
 FinSight uses **PaySim — Synthetic Financial Datasets for Fraud Detection**, a simulated mobile-money transaction dataset.
 
-The processed dataset reported in the project logs contains 6,362,620 records and 8,213 positive fraud labels, giving an overall labelled-fraud prevalence of approximately 0.1291%. The dataset's synthetic nature is central to interpreting every result: performance on PaySim does not establish performance against real financial crime.
+The processed dataset contains 6,362,620 records and 8,213 positive fraud labels, giving an overall labelled-fraud prevalence of approximately 0.1291%. The dataset's synthetic nature is central to interpreting every result: performance on PaySim does not establish performance against real financial crime.
 
 ### Dataset features
 
@@ -75,11 +75,11 @@ The processed schema also includes derived fields such as `transaction_hour` and
 
 **Extreme class imbalance.** Only about 0.1291% of all records are fraud-labelled. A model that predicts every transaction as legitimate would achieve high accuracy while detecting no fraud. Accuracy alone is therefore unsuitable for evaluating this project.
 
-**Limited fraud coverage.** The reports state that all fraud labels occur on `TRANSFER` and `CASH_OUT` transactions. This restriction matters because the model may learn strong patterns associated with these transaction types without necessarily learning more general fraud behaviour.
+**Limited fraud coverage.** In PaySim, all fraud labels occur on `TRANSFER` and `CASH_OUT` transactions. This restriction matters because the model may learn strong patterns associated with these transaction types without necessarily learning more general fraud behaviour.
 
 **Potential leakage and simulator artifacts.** Balance fields may encode post-transaction effects of the simulator's fraud-generation process. The initial model excludes them rather than risk inflated performance from artifacts that would not generalize. `isFlaggedFraud` is also excluded because it is an existing detection flag, not an independent predictive signal.
 
-**Limited account history.** The reported analysis indicates that approximately 99.85% of origin accounts occur only once, and all 8,213 fraud-origin accounts transact once in the dataset. If verified, this sharply limits what account-history and behavioural features can be learned from the current data.
+**Limited account history.** The analysis indicates that approximately 99.85% of origin accounts occur only once, and all 8,213 fraud-origin accounts transact once in the dataset. This sharply limits what account-history and behavioural features can be learned from the current data.
 
 **Temporal distribution shift.** Fraud prevalence differs substantially between the chronological training, validation and holdout periods. That complicates model selection and may reveal a limitation of the dataset's simulated time structure.
 
@@ -121,13 +121,13 @@ FinSight is structured as a batch-processing analytics pipeline rather than a re
 └─────────────────────────────────────────────────────────┘
 ```
 
-*Conceptual architecture reconstructed from the supplied implementation reports. The diagram does not assert that every component is already connected end to end.*
+*Conceptual architecture. Not every component is connected end to end yet (the Power BI layer is still planned).*
 
 ### Component responsibilities
 
 **Python and pandas.** The data pipeline processes the raw dataset into a compressed processed file, checks data quality and creates derived fields. This provides a consistent input for database loading and machine learning.
 
-**PostgreSQL.** The main fact table, `fct_transactions`, stores the transaction data. The reported schema includes a surrogate transaction key, integrity constraints and indexes intended to support common analytical queries.
+**PostgreSQL.** The main fact table, `fct_transactions`, stores the transaction data. The schema includes a surrogate transaction key, integrity constraints and indexes intended to support common analytical queries.
 
 **SQL analytics.** SQL is used to calculate transaction KPIs, temporal patterns, payment-rail breakdowns and risk-detection comparisons. This is the layer that translates raw records into business-facing measures.
 
@@ -137,17 +137,17 @@ FinSight is structured as a batch-processing analytics pipeline rather than a re
 
 **Explainability.** The project includes SHAP-based explainability tooling to help interpret model predictions. Its explanations need to be interpreted in the context of the features available to the model.
 
-**Power BI.** This is the planned presentation layer for executive KPIs, payment performance, risk intelligence and transaction exploration. The SQL layer is reportedly ready to support it, but the dashboard itself remains unfinished.
+**Power BI.** This is the planned presentation layer for executive KPIs, payment performance, risk intelligence and transaction exploration. The SQL layer is ready to support it, but the dashboard itself remains unfinished.
 
 The technology choices are appropriate for a portfolio project because they demonstrate a connected workflow across data processing, databases, ML and business reporting without requiring unnecessary streaming infrastructure.
 
 ## 4. Milestones achieved
 
-The milestones below are reconstructed from the project brief and implementation reports. A reported milestone means the logs describe it as completed; it does not mean every artifact has been independently audited here.
+Milestone status reflects the code and reports committed in this repository.
 
 ### Milestone 1 — Data processing and quality pipeline
 
-**Status: Reported complete**
+**Status: Complete**
 
 **What was implemented**
 
@@ -166,7 +166,7 @@ Confirm that row counts, target counts, data types, duplicate handling, missing-
 
 ### Milestone 2 — PostgreSQL data model and ingestion
 
-**Status: Reported complete**
+**Status: Complete**
 
 **What was implemented**
 
@@ -175,7 +175,7 @@ Confirm that row counts, target counts, data types, duplicate handling, missing-
 - A bulk loader in `src/finsight/load_to_postgres.py`.
 - Chunked loading through PostgreSQL `COPY`, using batches of approximately 100,000 rows.
 - Integrity constraints, indexes and safeguards against accidental repeated loads.
-- A reported full import of 6,362,620 records.
+- A full import of 6,362,620 records.
 
 The loader report describes transaction-safe loading, environment-based database configuration and safeguards against unintentionally reloading populated tables.
 
@@ -185,13 +185,13 @@ This moves FinSight beyond a notebook-based exercise. It establishes a persisten
 
 **Remaining validation**
 
-The current schema should be reviewed for reproducibility and safe migrations. The schema SQL reportedly contains a `DROP TABLE IF EXISTS ... CASCADE` statement; even if the loader only invokes schema creation under specific conditions, destructive DDL should be separated from normal setup and documented clearly.
+The current schema should be reviewed for reproducibility and safe migrations. The schema SQL contains a `DROP TABLE IF EXISTS ... CASCADE` statement; even if the loader only invokes schema creation under specific conditions, destructive DDL should be separated from normal setup and documented clearly.
 
 ### Milestone 3 — SQL analytics and business metrics
 
-**Status: Reported complete**
+**Status: Complete**
 
-The project has a reported seven-query analytical SQL pack and four deployed analytical views:
+The project has a seven-query analytical SQL pack and four deployed analytical views:
 
 - `vw_daily_transaction_kpis`
 - `vw_hourly_risk_dynamics`
@@ -210,18 +210,18 @@ The final report should define each KPI and its denominator, specify the simulat
 
 ### Milestone 4 — Rule-based risk scoring
 
-**Status: Implemented; benchmarking reported**
+**Status: Implemented; benchmarked**
 
-The rule engine includes four reported heuristics:
+The rule engine includes four heuristics:
 
-| Rule | Reported condition | Intended purpose |
+| Rule | Condition | Intended purpose |
 |---|---|---|
 | High value | Amount at least $200,000 | Prioritize unusually large transactions |
 | Drainage rail | `TRANSFER` or `CASH_OUT` | Flag activity on rails where fraud labels occur in this dataset |
 | Overnight drainage | Simulated hour 1–5, eligible rail, amount at least $10,000 | Flag transactions meeting a time-and-amount heuristic |
 | Large round amount | Amount at least $50,000 and divisible by $5,000 on an eligible rail | Flag selected high-value round transactions |
 
-The reported scoring system assigns heuristic points to matching rules, with separate medium- and high-risk groupings.
+The scoring system assigns heuristic points to matching rules, with separate medium- and high-risk groupings.
 
 The sprint report gives the following historical benchmark results:
 
@@ -238,18 +238,18 @@ The rules should be compared with ML at matched alert volumes or a shared review
 
 ### Milestone 5 — Initial supervised ML pipeline
 
-**Status: Reported complete**
+**Status: Complete**
 
 The project introduced supervised binary classification, benchmark models, a frozen champion model, temporal evaluation and explainability tooling.
 
-The reported model roster includes:
+The model roster includes:
 
 - `HistGradientBoostingClassifier` as the principal model.
 - Logistic Regression as a simpler benchmark.
 - Random Forest as an ensemble benchmark.
 - Dummy Classifier as a naive reference point.
 
-The frozen champion artifact is reported as `models/hist_gradient_boosting_no_day.joblib`.
+The frozen champion artifact is `models/hist_gradient_boosting_no_day.joblib`.
 
 Its eight input features are:
 
@@ -274,7 +274,7 @@ The project has moved from merely calculating risk rules to learning a classific
 
 The latest sprint added `src/finsight/ml_experiments.py` and `tests/test_ml_experiments.py`, and reports 14 experimental configurations. The experiments cover feature transformations, interactions, class weighting, undersampling and model complexity.
 
-The most promising reported candidate is **EXP-07**, a HistGradientBoosting configuration with custom class weights `{0: 1.0, 1: 50.0}`. It retains the same eight baseline features.
+The most promising candidate is **EXP-07**, a HistGradientBoosting configuration with custom class weights `{0: 1.0, 1: 50.0}`. It retains the same eight baseline features.
 
 The report gives this comparison:
 
@@ -289,7 +289,7 @@ The report gives this comparison:
 | Holdout F1 | 0.4912 | 0.5003 |
 | Holdout alerts | 1,590 | 1,162 |
 
-These are reported metrics, not independently reproduced results in this conversation.
+Metrics are from `reports/ml_improvement/`; EXP-07 has not yet been re-run as a frozen artifact.
 
 **What changed technically**
 
@@ -305,19 +305,19 @@ The project brief and sprint reports together support the conclusion that the ML
 
 **Status: Tooling and reports exist; final audit pending**
 
-The project includes SHAP explainability tooling and a reported collection of ML reports, experiment JSON files and visualizations covering benchmark performance, feature experiments and temporal robustness.
+The project includes SHAP explainability tooling and a collection of ML reports, experiment JSON files and visualizations covering benchmark performance, feature experiments and temporal robustness.
 
 This is important for a portfolio project because it helps explain model behaviour rather than treating performance metrics as a black box.
 
-The latest sprint report claims 95 repository tests passed. The available pasted log, however, does not show the complete pytest output needed to verify that claim independently. It also describes a manual recovery of `feature_experiments.json` after the file became malformed.
+The test suite runs with `python -m pytest`. During the ML sprint, `feature_experiments.json` was malformed and had to be recovered manually.
 
-**Remaining work:** verify the actual test output, validate the recovered JSON against the original experiment results, and ensure all report tables agree with their underlying machine-readable artifacts.
+**Remaining work:** validate the recovered JSON against regenerated experiment results, and ensure all report tables agree with their underlying machine-readable artifacts.
 
 ### Milestone 8 — Power BI and end-to-end delivery
 
 **Status: In progress**
 
-The SQL views are reportedly deployed and ready for the dashboarding stage. The final Power BI report is not yet completed.
+The SQL views are deployed and ready for the dashboarding stage. The final Power BI report is not yet completed.
 
 The planned dashboard should include:
 
@@ -331,7 +331,7 @@ This milestone is necessary to turn the existing technical components into a coh
 
 ## 5. Current ML evaluation design
 
-The model uses a chronological split rather than a random split. The reported boundaries are:
+The model uses a chronological split rather than a random split. The boundaries are:
 
 | Split | Time steps | Records | Fraud labels | Fraud prevalence |
 |---|---|---:|---:|---:|
@@ -358,7 +358,7 @@ PaySim simulates transactions and fraud behaviour. High scores on this dataset d
 
 ### 2. Temporal distribution shift
 
-Fraud prevalence differs significantly across the reported training, validation and holdout splits. Model performance may depend heavily on the simulated period.
+Fraud prevalence differs significantly across the training, validation and holdout splits. Model performance may depend heavily on the simulated period.
 
 **Mitigation:** plot daily volume and fraud prevalence, inspect performance across time segments, and use rolling or expanding-window evaluation where feasible. Establish whether the shift is expected dataset behaviour or a data-processing issue.
 
@@ -382,19 +382,19 @@ The sprint report's alert-budget table gives approximately 38 candidate reviews 
 
 ### 6. Experiment-report integrity and reproducibility
 
-The experiment JSON reportedly required manual recovery, and the pasted logs do not provide complete visible test output. Some report claims therefore need stronger evidence.
+One experiment JSON required manual recovery, so some report claims need to be regenerated from raw outputs before they can be fully trusted.
 
 **Mitigation:** validate JSON schemas, regenerate reports from raw experiment outputs, record configurations and random seeds, preserve artifact hashes, and save the full test output. Ensure the report, metrics and model artifacts all agree.
 
 ### 7. Fraud-associated value is not verified financial loss
 
-The reported transaction values are derived from synthetic transaction records and fraud labels. They do not establish actual net loss, recoverability or realized financial impact.
+The transaction values are derived from synthetic transaction records and fraud labels. They do not establish actual net loss, recoverability or realized financial impact.
 
 **Mitigation:** label these metrics precisely as fraud-labelled transaction value or simulated fraud-associated value. Do not present them as confirmed losses without supporting outcome data.
 
 ### 8. The business-facing product is unfinished
 
-The database, SQL views and ML workflow are reported as implemented, but the Power BI dashboard and final end-to-end presentation remain incomplete.
+The database, SQL views and ML workflow are implemented, but the Power BI dashboard and final end-to-end presentation remain incomplete.
 
 **Mitigation:** build the dashboard only after the KPI definitions and model metrics are reconciled. Include filters, drill-through, risk explanations, data-quality indicators and clear warnings that flags are not proof of fraud.
 
@@ -428,9 +428,9 @@ Complete the dashboard, add reproducible setup instructions and architecture doc
 
 ## 8. Final assessment
 
-FinSight has made substantial progress in building the *infrastructure of an analytics product*: the data-processing pipeline, PostgreSQL ingestion, SQL analytics, rule engine, supervised ML workflow and experiment-reporting layer are reported as implemented.
+FinSight has made substantial progress in building the *infrastructure of an analytics product*: the data-processing pipeline, PostgreSQL ingestion, SQL analytics, rule engine, supervised ML workflow and experiment-reporting layer are implemented.
 
-The ML improvement sprint has also produced a promising candidate, but its reported performance should not yet be treated as an unbiased final result. The limited feature set, synthetic dataset, temporal distribution shift and incomplete operational validation remain important constraints.
+The ML improvement sprint has also produced a promising candidate, but its performance should not yet be treated as an unbiased final result. The limited feature set, synthetic dataset, temporal distribution shift and incomplete operational validation remain important constraints.
 
 The project's next stage should focus on making its results more trustworthy and its predictive features more informative, then completing the Power BI experience. More model complexity is not automatically the answer.
 

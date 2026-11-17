@@ -1,5 +1,5 @@
 {
-  "model_artifact": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\models\\hist_gradient_boosting_no_day.joblib",
+  "model_artifact": "models/hist_gradient_boosting_no_day.joblib",
   "model_name": "HistGradientBoosting No Day",
   "feature_count": 8,
   "feature_names": [

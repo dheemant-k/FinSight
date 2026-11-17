@@ -85,10 +85,11 @@ In contemporary financial technology and digital payment systems, payment proces
 - **Requirement**: The system shall evaluate transactions against externalized, deterministic risk rules defined in `config/risk_rules.yaml` and assign a composite score (0–100) with clear reason codes.
 - **Traceable Acceptance Criteria**:
   - `AC-5.1`: High-value transaction threshold triggers `RULE_001_HIGH_VALUE` and assigns configured points.
-  - `AC-5.2`: Short-window transaction bursts (velocity) trigger `RULE_002_HIGH_VELOCITY` using configurable time windows.
-  - `AC-5.3`: Geographic hops across country borders within impossible transit windows trigger `RULE_003_RAPID_GEO_HOP`.
-  - `AC-5.4`: Transactions at high-risk Merchant Category Codes (e.g., gambling, unregulated crypto) trigger `RULE_004_HIGH_RISK_MCC`.
-  - `AC-5.5`: Consecutive declines followed by an approval trigger `RULE_005_CONSECUTIVE_DECLINES`.
+  - `AC-5.2`: `TRANSFER` and `CASH_OUT` transactions trigger `RULE_002_DRAINAGE_RAIL`.
+  - `AC-5.3`: Overnight (hours 1–5) drainage-rail transactions above a minimum amount trigger `RULE_003_OVERNIGHT_DRAINAGE`.
+  - `AC-5.4`: Large round-amount drainage-rail transactions trigger `RULE_004_LARGE_ROUND_AMOUNT`.
+  - `AC-5.5`: Thresholds, points, enabled flags and tier cutoffs are read from `config/risk_rules.yaml`; unknown rule ids are rejected at load time.
+  - *Revised from the Stage 1 draft:* velocity, impossible-travel, merchant-category and decline-sequence rules were dropped because PaySim has no customer history, geography, MCCs or decline events. See [risk methodology](risk-methodology.md).
   - `AC-5.6`: Each evaluated transaction outputs: `risk_score` (INT 0-100), `risk_tier` (LOW, MEDIUM, HIGH), `action` (AUTO_APPROVE, MANUAL_REVIEW, FLAG_SUSPICIOUS), and a concatenated list of explainable `reason_codes`.
 
 ### FR-6: Power BI Reporting & Investigation Dashboard

@@ -56,7 +56,7 @@ Candidate 'Custom Class Weight 1:50' demonstrated genuine improvement: Validatio
 
 ### Recommended Next Action:
 1. **Model Governance:**
-   - Retain [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) as the authoritative champion.
+   - Retain [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) as the authoritative champion.
    - Do not overwrite or retrain the serialized champion artifact.
 2. **Dataset Reassessment Findings:**
    - Further model performance gains on PaySim are structurally bounded by simulator constraints: single-use origin account sparsity (99.85%), synthetic balance liquidation leakage, and zero fraud on PAYMENT/DEBIT/CASH_IN rails.

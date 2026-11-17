@@ -56,7 +56,7 @@ The dataset spans 744 simulation steps (31 days). The canonical split strategy:
    - Any preprocessing scaler (e.g. `StandardScaler`, `MinMaxScaler`), categorical frequency encoders, or decision threshold optimizers must be fit **exclusively on the training partition**.
    - Transformations are applied to the holdout test set using parameters learned on train.
 2. **Prohibited Feature Policy**:
-   - As enforced in [`src/finsight/features.py`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/src/finsight/features.py), candidate predictor feature matrices must never contain:
+   - As enforced in [`src/finsight/features.py`](../src/finsight/features.py), candidate predictor feature matrices must never contain:
      - `is_fraud` (evaluation target).
      - `is_flagged_fraud` (pre-existing heuristic flag).
      - `name_orig`, `name_dest` (sparse identifiers).

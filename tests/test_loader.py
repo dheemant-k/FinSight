@@ -14,6 +14,8 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
+from tests.conftest import requires_processed_data
+
 from finsight.load_to_postgres import (
     CSV_TO_DB_COLUMNS,
     EXPECTED_CSV_COLUMNS,
@@ -47,6 +49,7 @@ def test_database_config_env(monkeypatch):
     assert "analyst_usr" in sanitized
 
 
+@requires_processed_data
 def test_validate_input_schema_valid():
     """Verify schema validator accepts the real processed dataset header."""
     csv_path = Path("data/processed/transactions.csv.gz")
@@ -99,6 +102,7 @@ def test_format_chunk_for_copy():
     assert lines[0].startswith("1,PAYMENT,100.5,C1")
 
 
+@requires_processed_data
 def test_loader_dry_run():
     """Verify dry_run executes without connecting to database."""
     csv_path = Path("data/processed/transactions.csv.gz")
@@ -131,6 +135,7 @@ def test_sql_schema_ddl_syntax_and_contents():
     assert "idx_fct_type_fraud" in sql_text
 
 
+@requires_processed_data
 def test_sql_analytics_queries_execution():
     """Verify all 7 analytics queries execute without error and return expected structure."""
     analytics_dir = Path("sql/analytics")

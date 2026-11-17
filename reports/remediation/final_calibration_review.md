@@ -3,7 +3,7 @@
 **Document Status:** Final Frozen  
 **Date:** 2026-10-19  
 **Stage:** Phase D — Verify Calibration and Score Semantics  
-**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib)  
+**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib)  
 
 ---
 
