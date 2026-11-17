@@ -1,9 +1,14 @@
 # ==============================================================================
 # FinSight Risk Rules Configuration
-# Explainable, deterministic risk scoring rules for transaction intelligence.
+#
+# Loaded by `finsight.risk_rules.RiskEngine` (via RiskEngineConfig.from_yaml).
+# Changing a threshold or weight here changes engine behaviour without code edits.
+#
+# Each rule `id` must match an evaluator implemented in src/finsight/risk_rules.py;
+# unknown ids are rejected at load time so this file can never drift from the code.
 # ==============================================================================
 
-version: "1.0.0"
+version: "1.1.0"
 
 scoring_framework:
   baseline_score: 0
@@ -25,62 +30,66 @@ scoring_framework:
 rules:
   - id: "RULE_001_HIGH_VALUE"
     name: "Excessive Single Transaction Amount"
-    description: "Flags transactions exceeding the defined single-transaction value ceiling."
+    description: "Flags transactions exceeding single-transaction monetary threshold."
     category: "VALUE_ANOMALY"
     severity: "HIGH"
     risk_points: 35
     enabled: true
     parameters:
-      threshold_amount: 5000.00
-      currency: "USD"
-    reason_template: "Transaction amount {amount} exceeds the single transaction monitoring ceiling of {threshold_amount}."
+      threshold_amount: 200000.00
+    rationale: >-
+      In PaySim, fraudulent transfers and cash-outs average ~$1.47M, compared to ~$173k
+      for legitimate cash-outs. High-value transactions carry outsized loss exposure.
+    limitations: >-
+      Large transactions occur legitimately for payroll, B2B procurement, or asset
+      purchases. Value alone has a significant false-positive rate.
 
-  - id: "RULE_002_HIGH_VELOCITY"
-    name: "Short-Window Transaction Velocity Spike"
-    description: "Flags accounts executing multiple transactions within a narrow time window."
-    category: "VELOCITY"
-    severity: "HIGH"
-    risk_points: 40
-    enabled: true
-    parameters:
-      window_minutes: 10
-      max_transaction_count: 3
-    reason_template: "Account initiated {tx_count} transactions within {window_minutes} minutes, breaching the velocity threshold of {max_transaction_count}."
-
-  - id: "RULE_003_RAPID_GEO_HOP"
-    name: "Impossible Travel / Rapid Geographic Hop"
-    description: "Identifies consecutive transactions from distinct countries within an unrealistic transit duration."
-    category: "GEOGRAPHIC"
-    severity: "CRITICAL"
-    risk_points: 50
-    enabled: true
-    parameters:
-      window_hours: 2
-    reason_template: "Transactions detected in different countries ({prev_country} -> {current_country}) within {elapsed_hours} hours."
-
-  - id: "RULE_004_HIGH_RISK_MCC"
-    name: "High-Risk Merchant Category Code"
-    description: "Flags transactions processed at merchant categories historically prone to fraud or chargebacks."
-    category: "MERCHANT_PROFILE"
+  - id: "RULE_002_DRAINAGE_RAIL"
+    name: "Fund Drainage Rail Exposure"
+    description: "Flags transactions using CASH_OUT or TRANSFER payment rails."
+    category: "RAIL_EXPOSURE"
     severity: "MEDIUM"
     risk_points: 25
     enabled: true
     parameters:
-      high_risk_mcc_codes:
-        - "7995"  # Betting / Casino / Gambling
-        - "6051"  # Non-Financial Institutions / Foreign Currency / Crypto
-        - "5993"  # Cigar Stores and Stands
-        - "4829"  # Wire Transfer Money Orders
-    reason_template: "Merchant Category Code {mcc} matches high-risk monitoring registry."
+      high_risk_rails: ["TRANSFER", "CASH_OUT"]
+    rationale: >-
+      In PaySim, 100% of labelled fraud occurs on TRANSFER or CASH_OUT.
+      PAYMENT, CASH_IN, and DEBIT contain no labelled fraud.
+    limitations: >-
+      Over 99% of TRANSFER and CASH_OUT volume is legitimate. Rail type alone
+      cannot establish intent.
 
-  - id: "RULE_005_CONSECUTIVE_DECLINES"
-    name: "Repeated Failures Followed by Success"
-    description: "Detects potential card-testing or credential-stuffing patterns indicated by multiple failed attempts followed by an approval."
-    category: "BEHAVIORAL"
+  - id: "RULE_003_OVERNIGHT_DRAINAGE"
+    name: "Off-Hours Drainage Activity"
+    description: "Flags transfers or cash-outs of meaningful size during low-volume overnight hours."
+    category: "TEMPORAL_ANOMALY"
     severity: "HIGH"
-    risk_points: 30
+    risk_points: 25
     enabled: true
     parameters:
-      failure_lookback_window_minutes: 30
-      min_failures_before_success: 2
-    reason_template: "Successful transaction preceded by {failure_count} declined attempts in {window_minutes} minutes."
+      overnight_hours: [1, 2, 3, 4, 5]
+      min_amount: 10000.00
+      target_rails: ["TRANSFER", "CASH_OUT"]
+    rationale: >-
+      Legitimate simulated volume drops sharply overnight while fraud volume does not,
+      so overnight drainage transactions are disproportionately fraudulent.
+    limitations: >-
+      Night-shift workers, scheduled payments, and cross-border users transact
+      overnight without malicious intent. Hours are simulated, not real clock times.
+
+  - id: "RULE_004_LARGE_ROUND_AMOUNT"
+    name: "Elevated Round Amount Disparity"
+    description: "Flags large round-denomination disbursements on drainage rails."
+    category: "STRUCTURAL_ANOMALY"
+    severity: "MEDIUM"
+    risk_points: 15
+    enabled: true
+    parameters:
+      min_amount: 50000.00
+      round_modulus: 5000.00
+      target_rails: ["TRANSFER", "CASH_OUT"]
+    rationale: >-
+      Account liquidations often hit round limit ceilings rather than odd-cent amounts.
+    limitations: >-
+      Wholesale funding and inter-account transfers frequently use clean multiples.
