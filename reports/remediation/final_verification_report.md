@@ -3,7 +3,7 @@
 **Document Status:** Final Approved & Frozen  
 **Date:** 2026-10-19  
 **Decision Gate:** `READY_FOR_DASHBOARDING`  
-**Authoritative Frozen Model:** [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib)  
+**Authoritative Frozen Model:** [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib)  
 **Target Environment:** Python 3.14.3 | scikit-learn 1.8.0 | pandas 3.0.1 | shap 0.54.1 | pytest 9.1.1  
 
 ---
@@ -12,19 +12,19 @@
 
 This audit concludes the comprehensive verification, model freezing, and reliability assurance phase for FinSight.
 
-All components of the machine learning, data engineering, feature extraction, explainability, rule-engine, and financial metric layers were verified against the 6,362,620 transactions in the processed PaySim dataset ([`data/processed/transactions.csv.gz`](file:///data/processed/transactions.csv.gz)).
+All components of the machine learning, data engineering, feature extraction, explainability, rule-engine, and financial metric layers were verified against the 6,362,620 transactions in the processed PaySim dataset ([`data/processed/transactions.csv.gz`](../../data/processed/transactions.csv.gz)).
 
 ### Key Audit Accomplishments:
 1. **Identified & Serialized Authoritative Champion Model:**
-   - Saved [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) (8 features: strictly omitting `is_merchant_dest` and `transaction_day`).
+   - Saved [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) (8 features: strictly omitting `is_merchant_dest` and `transaction_day`).
    - Proved that omitting `transaction_day` eliminates an overfitted calendar-day shortcut created by PaySim's post-day-17 95% volume collapse.
    - Outperforms the historical 9-feature baseline across all key metrics: Holdout Average Precision increases from $0.3836 \to \mathbf{0.4479}$ (+16.8%), ROC-AUC increases from $0.9185 \to \mathbf{0.9487}$, and F1 increases from $0.4583 \to \mathbf{0.4912}$.
 2. **Re-Aligned Explainability Directly to Champion Model:**
-   - Synchronized all artifacts in [`reports/explainability/`](file:///reports/explainability) ([`global_shap_importance.csv`](file:///reports/explainability/global_shap_importance.csv), [`explainability_metadata.json`](file:///reports/explainability/explainability_metadata.json), [`local_explanations.json`](file:///reports/explainability/local_explanations.json), and [`explainability_report.md`](file:///reports/explainability/explainability_report.md)) to the 8-feature champion model across $N = 2,000$ holdout transactions (seed 42).
+   - Synchronized all artifacts in [`reports/explainability/`](../explainability) ([`global_shap_importance.csv`](../explainability/global_shap_importance.csv), [`explainability_metadata.json`](../explainability/explainability_metadata.json), [`local_explanations.json`](../explainability/local_explanations.json), and [`explainability_report.md`](../explainability/explainability_report.md)) to the 8-feature champion model across $N = 2,000$ holdout transactions (seed 42).
    - TreeSHAP exact additivity validated with maximum reconstruction error $\le 1.07 \times 10^{-14}$.
 3. **Built & Tested Frozen Evaluation Entry Point:**
-   - Implemented `evaluate_frozen_model` and CLI flag `--evaluate-frozen` in [`src/finsight/models.py`](file:///src/finsight/models.py). Evaluates saved bundles without retraining or holdout leakage.
-   - Output artifacts verified: [`reports/remediation/frozen_model_evaluation.json`](file:///reports/remediation/frozen_model_evaluation.json) and [`reports/remediation/frozen_model_evaluation.md`](file:///reports/remediation/frozen_model_evaluation.md).
+   - Implemented `evaluate_frozen_model` and CLI flag `--evaluate-frozen` in [`src/finsight/models.py`](../../src/finsight/models.py). Evaluates saved bundles without retraining or holdout leakage.
+   - Output artifacts verified: [`reports/remediation/frozen_model_evaluation.json`](frozen_model_evaluation.json) and [`reports/remediation/frozen_model_evaluation.md`](frozen_model_evaluation.md).
 4. **Automated Test Suite Complete (81 Passing Tests):**
    - 100% test pass rate in 14.19s with 0 failures and 0 warnings.
 5. **Formally Certified Dashboard Readiness:**
@@ -36,9 +36,9 @@ All components of the machine learning, data engineering, feature extraction, ex
 
 | Issue Examined | Initial State / Symptom | Root Cause | Actual Engineering Fix |
 | :--- | :--- | :--- | :--- |
-| **Model Bundle Ambiguity** | `hist_gradient_boosting_ablated.joblib` assumed to be "no-day". | "Ablated" in Milestone 4 meant ablated *merchant destination* (`is_merchant_dest`), NOT `transaction_day`. The 8-feature no-day model was evaluated in Phase 2 but not serialized as a standalone bundle. | Serialized [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) with complete provenance metadata, locked validation threshold ($0.9660$), and feature names. |
+| **Model Bundle Ambiguity** | `hist_gradient_boosting_ablated.joblib` assumed to be "no-day". | "Ablated" in Milestone 4 meant ablated *merchant destination* (`is_merchant_dest`), NOT `transaction_day`. The 8-feature no-day model was evaluated in Phase 2 but not serialized as a standalone bundle. | Serialized [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) with complete provenance metadata, locked validation threshold ($0.9660$), and feature names. |
 | **SHAP Alignment Drift** | Explainability report pointed to historical 9-feature model. | Milestone 5 TreeSHAP was executed prior to the Phase 2 temporal shortcut ablation study. | Regenerated TreeSHAP artifacts against `hist_gradient_boosting_no_day.joblib`. Additivity verified ($\text{error} = 1.07 \times 10^{-14}$). |
-| **Threshold Discretization** | Selected threshold $0.9900$ skipped validation F1 peak. | 100-step grid evaluated steps of $\Delta t \approx 0.01$, jumping from $0.9801$ to $0.9900$. | Implemented 1,000-candidate high-resolution grid in [`find_optimal_threshold()`](file:///src/finsight/models.py#L407). Validated multi-objective optimization (`f1`, `alert_constrained`, `recall_at_min_precision`) with deterministic tie-breaking. |
+| **Threshold Discretization** | Selected threshold $0.9900$ skipped validation F1 peak. | 100-step grid evaluated steps of $\Delta t \approx 0.01$, jumping from $0.9801$ to $0.9900$. | Implemented 1,000-candidate high-resolution grid in [`find_optimal_threshold()`](../../src/finsight/models.py#L407). Validated multi-objective optimization (`f1`, `alert_constrained`, `recall_at_min_precision`) with deterministic tie-breaking. |
 | **Overnight Volume Claim** | Rule documentation claimed $>99\%$ drop overnight without empirical citation. | Heuristic assumption from exploratory notes. | Full census across all 6,362,620 rows proved volume drops from $647,814$ (6 PM) to $1,241$ (3 AM)—an empirical drop of **$99.81\%$** and $422\times$ fraud concentration. |
 | **Financial Exposure Semantics** | Gross volume of $\$12.06\text{B}$ cited as financial loss. | Conflation of gross event exposure with net loss; PaySim paired transfers double-count fraud face value. | Established strict metric dictionary: gross simulated exposure is $\$12.06\text{B}$, net economic leakage is $\approx \$6.03\text{B}$. |
 | **Git & Repo Hygiene** | Untracked 500MB raw dataset in repository root. | Missing raw CSV ignore pattern in `.gitignore`. | Added `PS_*.csv` and archive patterns to `.gitignore`. Verified clean status. |
@@ -48,28 +48,28 @@ All components of the machine learning, data engineering, feature extraction, ex
 ## 3. Actual Code & Repository Changes
 
 ### 3.1 Files Modified
-1. [`src/finsight/models.py`](file:///src/finsight/models.py):
-   - Re-implemented [`find_optimal_threshold()`](file:///src/finsight/models.py#L407-L500) with 1,000 evaluation steps, multi-objective constraints (`f1`, `alert_constrained`, `recall_at_min_precision`), and deterministic tie-breaking.
-   - Added [`evaluate_frozen_model()`](file:///src/finsight/models.py#L867-L1023) and `--evaluate-frozen` CLI flag.
-2. [`src/finsight/explainability.py`](file:///src/finsight/explainability.py):
+1. [`src/finsight/models.py`](../../src/finsight/models.py):
+   - Re-implemented [`find_optimal_threshold()`](../../src/finsight/models.py#L407-L500) with 1,000 evaluation steps, multi-objective constraints (`f1`, `alert_constrained`, `recall_at_min_precision`), and deterministic tie-breaking.
+   - Added [`evaluate_frozen_model()`](../../src/finsight/models.py#L867-L1023) and `--evaluate-frozen` CLI flag.
+2. [`src/finsight/explainability.py`](../../src/finsight/explainability.py):
    - Refactored local explanation templates to isolate human-readable `observed_attributes` from mathematical one-hot attributions.
    - Re-ran pipeline on `models/hist_gradient_boosting_no_day.joblib`.
-3. [`tests/test_models.py`](file:///tests/test_models.py):
+3. [`tests/test_models.py`](../../tests/test_models.py):
    - Added 8 unit and regression tests covering multi-objective thresholds, alert constraints, precision floors, deterministic tie-breaking, fine grid resolution, edge cases, and frozen evaluation on synthetic fixtures.
-4. [`.gitignore`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/.gitignore):
+4. [`.gitignore`](../../.gitignore):
    - Added `PS_*.csv`, `*.csv.gz`, and `*.csv.zip` under raw dataset exclusions.
-5. [`README.md`](file:///c:/Users/samit/OneDrive/Desktop/FinSight/README.md):
+5. [`README.md`](../../README.md):
    - Updated documentation index, test counts (81 passing), Master Remediation overview, and model performance table.
 
 ### 3.2 Deliverables Created in `reports/remediation/`
-1. [`final_artifact_manifest.md`](file:///reports/remediation/final_artifact_manifest.md): Manifest of all 5 saved models, provenance, and tests.
-2. [`final_feature_contract.md`](file:///reports/remediation/final_feature_contract.md): Compact feature contract, availability, and leakage assessments.
-3. [`final_calibration_review.md`](file:///reports/remediation/final_calibration_review.md): Balanced margin offset diagnosis ($+7.08$ log-odds), score semantics, and alert tiers.
-4. [`final_shap_verification.md`](file:///reports/remediation/final_shap_verification.md): TreeSHAP additivity verification, grouped attributions, and non-causal guidelines.
-5. [`final_rules_vs_ml_review.md`](file:///reports/remediation/final_rules_vs_ml_review.md): Diurnal volume census ($99.81\%$ drop) and head-to-head holdout benchmark.
-6. [`final_metric_dictionary.md`](file:///reports/remediation/final_metric_dictionary.md): Single source of truth for SQL views and Power BI measures.
-7. [`frozen_model_evaluation.json`](file:///reports/remediation/frozen_model_evaluation.json) & [`frozen_model_evaluation.md`](file:///reports/remediation/frozen_model_evaluation.md): Machine and Markdown outputs from `--evaluate-frozen`.
-8. [`final_verification_report.md`](file:///reports/remediation/final_verification_report.md): This master synthesis.
+1. [`final_artifact_manifest.md`](final_artifact_manifest.md): Manifest of all 5 saved models, provenance, and tests.
+2. [`final_feature_contract.md`](final_feature_contract.md): Compact feature contract, availability, and leakage assessments.
+3. [`final_calibration_review.md`](final_calibration_review.md): Balanced margin offset diagnosis ($+7.08$ log-odds), score semantics, and alert tiers.
+4. [`final_shap_verification.md`](final_shap_verification.md): TreeSHAP additivity verification, grouped attributions, and non-causal guidelines.
+5. [`final_rules_vs_ml_review.md`](final_rules_vs_ml_review.md): Diurnal volume census ($99.81\%$ drop) and head-to-head holdout benchmark.
+6. [`final_metric_dictionary.md`](final_metric_dictionary.md): Single source of truth for SQL views and Power BI measures.
+7. [`frozen_model_evaluation.json`](frozen_model_evaluation.json) & [`frozen_model_evaluation.md`](frozen_model_evaluation.md): Machine and Markdown outputs from `--evaluate-frozen`.
+8. [`final_verification_report.md`](final_verification_report.md): This master synthesis.
 
 ---
 
@@ -176,7 +176,7 @@ All exit criteria have been satisfied. Model remediation is formally closed.
 
 ### Milestone 6 Handoff: PostgreSQL Analytical Views & KPI Marts
 
-To support the agreed metric dictionary ([`reports/remediation/final_metric_dictionary.md`](file:///reports/remediation/final_metric_dictionary.md)) and prepare for Power BI semantic modeling, Milestone 6 will implement the following analytical views in `sql/views/`:
+To support the agreed metric dictionary ([`reports/remediation/final_metric_dictionary.md`](final_metric_dictionary.md)) and prepare for Power BI semantic modeling, Milestone 6 will implement the following analytical views in `sql/views/`:
 
 1. **`vw_daily_transaction_kpis`**
    - **Source Tables:** `fct_transactions`

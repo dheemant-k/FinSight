@@ -28,10 +28,10 @@ Every output across all four views reconciles with zero variance against the aut
 
 ## 2. PostgreSQL Schema & View Definitions
 
-All view DDL files are maintained under [`sql/views/`](file:///sql/views/) and are completely idempotent (`CREATE OR REPLACE VIEW`).
+All view DDL files are maintained under [`sql/views/`](../../sql/views) and are completely idempotent (`CREATE OR REPLACE VIEW`).
 
 ### 2.1 View 1: `vw_daily_transaction_kpis`
-- **File:** [`sql/views/01_vw_daily_transaction_kpis.sql`](file:///sql/views/01_vw_daily_transaction_kpis.sql)
+- **File:** [`sql/views/01_vw_daily_transaction_kpis.sql`](../../sql/views/01_vw_daily_transaction_kpis.sql)
 - **Grain:** One record per simulation day (`transaction_day`, 1 to 31).
 - **Row Count:** Exactly 31 rows.
 - **Fields Provided:**
@@ -46,7 +46,7 @@ All view DDL files are maintained under [`sql/views/`](file:///sql/views/) and a
   - `fraud_value_exposure_share_pct`: Dollar share of daily volume involved in fraud.
 
 ### 2.2 View 2: `vw_hourly_risk_dynamics`
-- **File:** [`sql/views/02_vw_hourly_risk_dynamics.sql`](file:///sql/views/02_vw_hourly_risk_dynamics.sql)
+- **File:** [`sql/views/02_vw_hourly_risk_dynamics.sql`](../../sql/views/02_vw_hourly_risk_dynamics.sql)
 - **Grain:** One record per simulation step (`step`, 1 to 743).
 - **Row Count:** Exactly 743 rows.
 - **Temporal Semantics Note:** `step` represents 1-indexed simulation hours. Hours are synthetic simulation counters and do not map to real calendar timestamps or real-world timezones.
@@ -63,7 +63,7 @@ All view DDL files are maintained under [`sql/views/`](file:///sql/views/) and a
   - `fraud_transfer_face_value`: Hourly stage-1 transfer fraud value.
 
 ### 2.3 View 3: `vw_payment_rail_performance`
-- **File:** [`sql/views/03_vw_payment_rail_performance.sql`](file:///sql/views/03_vw_payment_rail_performance.sql)
+- **File:** [`sql/views/03_vw_payment_rail_performance.sql`](../../sql/views/03_vw_payment_rail_performance.sql)
 - **Grain:** One record per payment rail / transaction type (5 rows).
 - **Row Count:** Exactly 5 rows (`CASH_IN`, `CASH_OUT`, `DEBIT`, `PAYMENT`, `TRANSFER`).
 - **Fields Provided:**
@@ -89,7 +89,7 @@ All view DDL files are maintained under [`sql/views/`](file:///sql/views/) and a
 | **Total** | **6,362,620** | **$1,144,392,944,759.77** | **100.00%** | **100.00%** | **8,213** | **$12,056,415,427.84** | **0.1291%** |
 
 ### 2.4 View 4: `vw_risk_detection_benchmark`
-- **File:** [`sql/views/04_vw_risk_detection_benchmark.sql`](file:///sql/views/04_vw_risk_detection_benchmark.sql)
+- **File:** [`sql/views/04_vw_risk_detection_benchmark.sql`](../../sql/views/04_vw_risk_detection_benchmark.sql)
 - **Grain:** One record per evaluation partition, system/model identifier, and operating point.
 - **Row Count:** Exactly 8 benchmark rows.
 - **Integrity Guarantee:** Confusion matrices ($TP + FP + FN + TN$) strictly sum to the exact evaluation population ($196,601$ for holdout, $151,302$ for validation). Average Precision and ROC-AUC are populated only for continuous probability models.

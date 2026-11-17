@@ -3,7 +3,7 @@
 **Document Status:** Final Frozen  
 **Date:** 2026-10-19  
 **Stage:** Phase C — Freeze the Feature Set and Recheck Shortcut Risk  
-**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) (8 features)  
+**Authoritative Model:** [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) (8 features)  
 
 ---
 
@@ -60,7 +60,7 @@ Although `amount` and `log1p_amount` exhibit a Pearson correlation of $r = 0.387
 
 ## 4. Enforcement and Validation Invariants
 
-Feature generation is enforced by automated contract tests in [`tests/test_features.py`](file:///tests/test_features.py) and [`src/finsight/features.py`](file:///src/finsight/features.py):
+Feature generation is enforced by automated contract tests in [`tests/test_features.py`](../../tests/test_features.py) and [`src/finsight/features.py`](../../src/finsight/features.py):
 1. **Strict Prohibited Column Assertion:**
    ```python
    PROHIBITED_FEATURE_COLUMNS = {

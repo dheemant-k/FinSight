@@ -821,7 +821,7 @@ framework that assigns each feature its exact marginal contribution to the model
 > SHAP values do **NOT** prove physical fraud causation, legal guilt, or operational intent.
 
 ### Selected Model Artifact Rationale
-- **Model Selected:** [`models/hist_gradient_boosting_ablated.joblib`](file:///{_src_root}/models/hist_gradient_boosting_ablated.joblib)
+- **Model Selected:** [`models/hist_gradient_boosting_ablated.joblib`](../../models/hist_gradient_boosting_ablated.joblib)
 - **Rationale:** Feature ablation in Milestone 4 verified that `is_merchant_dest` is an artifactual PaySim shortcut that provides exactly `+0.0000` marginal PR-AUC. In PaySim, merchant destinations appear exclusively on legitimate `PAYMENT` transactions and never experience simulated fraud. The ablated model omits this spurious shortcut while maintaining identical holdout PR-AUC (`0.3836`) and F1 score (`0.4583`), making it cleaner, more defensible, and superior for explainability.
 
 ---
@@ -858,7 +858,7 @@ $$\\text{{Importance}}_j = \\frac{{1}}{{N}} \\sum_{{i=1}}^N |\\phi_j(x_i)|$$
 
 The SHAP summary beeswarm plot visualizes feature value directionality (red = high value, blue = low value) against its positive or negative impact on the fraud log-odds margin.
 
-![Global SHAP Summary Plot](file:///{output_path.parent.resolve().as_posix()}/global_shap_summary.png)
+![Global SHAP Summary Plot](global_shap_summary.png)
 
 ---
 

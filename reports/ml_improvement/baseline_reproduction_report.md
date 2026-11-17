@@ -2,7 +2,7 @@
 
 **Audit Date:** 2026-10-19 11:34:15 UTC  
 **Auditor:** Senior Applied ML Engineer (Fraud Systems & Imbalance Evaluation)  
-**Evaluated Artifact:** `C:\Users\samit\OneDrive\Desktop\FinSight\models\hist_gradient_boosting_no_day.joblib`  
+**Evaluated Artifact:** `models/hist_gradient_boosting_no_day.joblib`  
 **Model Identifier:** `HistGradientBoosting No Day`  
 **Evaluation Dataset:** `data/processed/transactions.csv.gz` (6,362,620 transactions, 8,213 frauds)  
 

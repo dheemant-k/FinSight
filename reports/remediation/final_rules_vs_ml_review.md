@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-This report establishes the empirical validation of the FinSight heuristic risk engine ([`src/finsight/risk_rules.py`](file:///src/finsight/risk_rules.py)) and provides an objective, head-to-head benchmark against the supervised machine learning estimators on an identical, frozen holdout population.
+This report establishes the empirical validation of the FinSight heuristic risk engine ([`src/finsight/risk_rules.py`](../../src/finsight/risk_rules.py)) and provides an objective, head-to-head benchmark against the supervised machine learning estimators on an identical, frozen holdout population.
 
 ### Key Audit Conclusions:
 1. **Empirical Grounding of the Overnight Rule (RULE_003):** 

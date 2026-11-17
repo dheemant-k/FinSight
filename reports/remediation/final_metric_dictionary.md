@@ -11,7 +11,7 @@
 
 This metric dictionary establishes the authoritative, unambiguous definitions, mathematical formulas, and business semantics for all key performance indicators (KPIs), operational metrics, and financial risk measures in FinSight. 
 
-All figures have been calculated from the 6,362,620 validated transaction records in [`data/processed/transactions.csv.gz`](file:///data/processed/transactions.csv.gz).
+All figures have been calculated from the 6,362,620 validated transaction records in [`data/processed/transactions.csv.gz`](../../data/processed/transactions.csv.gz).
 
 ### Core Financial Principles: Value, Exposure, and Unobservable Loss
 1. **Gross Transaction Value (GTV):** **$\$1,144,392,944,759.77$** ($\approx \$1.144\text{T}$). The total payments volume processed across all 5 payment rails ($6,362,620$ transactions).

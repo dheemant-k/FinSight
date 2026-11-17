@@ -90,7 +90,7 @@ Generated the following exact machine metrics:
    Tracing historical logs revealed that in the 9-feature baseline experiment (which included `transaction_day`), the validation ROC-AUC was recorded as `0.9229` (in some preliminary runs `0.9231`).
 3. **Forensic Cause:**
    During the manual compilation of the summary table in `reports/remediation/final_remediation_report.md`, the author transcribed the baseline validation ROC-AUC figure into the holdout ROC-AUC cell for Model 2. 
-   Crucially, the raw machine-generated results file [`reports/remediation/ablation_experiment_results.json`](file:///reports/remediation/ablation_experiment_results.json) (line 453) generated at `2026-10-18T21:16:01Z` records `"roc_auc": 0.9487`. 
+   Crucially, the raw machine-generated results file [`reports/remediation/ablation_experiment_results.json`](ablation_experiment_results.json) (line 453) generated at `2026-10-18T21:16:01Z` records `"roc_auc": 0.9487`. 
    **Conclusion:** The ROC-AUC figure of `0.9231` was a clerical narrative error. The true holdout ROC-AUC is **`0.9487`**.
 
 ### 3.2 Root Cause of the Threshold Discrepancy (0.985 vs 0.966)
@@ -108,7 +108,7 @@ Generated the following exact machine metrics:
    $$\text{Precision} = \frac{869}{869 + 523} = 62.43\% \quad \text{Recall} = \frac{869}{2,148} = 40.46\% \quad F_1 = \mathbf{0.4912}$$
    Coincidentally, this exploratory point yielded an F1 score of $0.4912$, identical to the true optimal threshold F1 score ($0.4912$). The author mistakenly labelled this candidate point as the validation optimal threshold in earlier draft markdown tables.
 4. **Authoritative Resolution:**
-   The serialized model bundle [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) contains the dictionary key `"selected_threshold": 0.966`. Applying this saved threshold yields:
+   The serialized model bundle [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) contains the dictionary key `"selected_threshold": 0.966`. Applying this saved threshold yields:
    $$\text{Precision} = \frac{918}{1,590} = 57.74\% \quad \text{Recall} = \frac{918}{2,148} = 42.74\% \quad F_1 = \mathbf{0.4912}$$
    **Conclusion:** The threshold $0.9850$ was an exploratory label. The authoritative, frozen champion threshold is **`0.9660`**.
 
@@ -121,7 +121,7 @@ The champion model artifact and evaluation pipeline are formally frozen under th
 | Attribute | Authoritative Specification |
 | :--- | :--- |
 | **Model Name** | `HistGradientBoosting No Day` |
-| **Artifact Path** | [`models/hist_gradient_boosting_no_day.joblib`](file:///models/hist_gradient_boosting_no_day.joblib) |
+| **Artifact Path** | [`models/hist_gradient_boosting_no_day.joblib`](../../models/hist_gradient_boosting_no_day.joblib) |
 | **Algorithm** | `sklearn.ensemble.HistGradientBoostingClassifier` |
 | **Random State** | `42` |
 | **Training Partition** | $\text{step} \le 450$ ($6,014,717$ rows) |
@@ -144,8 +144,8 @@ python src/finsight/models.py --evaluate-frozen --model-path models/hist_gradien
 ```
 
 Machine-readable outputs:
-- [`reports/remediation/frozen_model_evaluation.json`](file:///reports/remediation/frozen_model_evaluation.json)
-- [`reports/remediation/frozen_model_evaluation.md`](file:///reports/remediation/frozen_model_evaluation.md)
+- [`reports/remediation/frozen_model_evaluation.json`](frozen_model_evaluation.json)
+- [`reports/remediation/frozen_model_evaluation.md`](frozen_model_evaluation.md)
 
 ---
 

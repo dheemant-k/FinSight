@@ -456,7 +456,7 @@
     }
   },
   "figures": {
-    "temporal_daily_dynamics": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\reports\\ml_improvement\\figures\\temporal_daily_dynamics.png",
-    "temporal_segment_pr_curves": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\reports\\ml_improvement\\figures\\temporal_segment_pr_curves.png"
+    "temporal_daily_dynamics": "reports/ml_improvement/figures/temporal_daily_dynamics.png",
+    "temporal_segment_pr_curves": "reports/ml_improvement/figures/temporal_segment_pr_curves.png"
   }
 }

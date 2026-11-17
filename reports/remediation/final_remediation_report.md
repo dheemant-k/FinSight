@@ -130,15 +130,15 @@ All nine mandatory technical audit reports have been compiled, cross-referenced,
 
 | Report Path | Focus & Core Subject | Status |
 | :--- | :--- | :---: |
-| [`reports/remediation/baseline_audit.md`](file:///reports/remediation/baseline_audit.md) | Phase 0 — Environment, bundle audit, exact baseline reproduction | Verified |
-| [`reports/remediation/temporal_shift_analysis.md`](file:///reports/remediation/temporal_shift_analysis.md) | Phase 2 — Volume collapse mechanism, temporal ablations, diurnal cycles | Verified |
-| [`reports/remediation/feature_audit.md`](file:///reports/remediation/feature_audit.md) | Phase 3 — Post-transaction balance leakage, amount importance, encoding | Verified |
-| [`reports/remediation/shap_audit.md`](file:///reports/remediation/shap_audit.md) | Phase 4 — Exact additivity proof, reconciliation, grouped shares, non-causal | Verified |
-| [`reports/remediation/calibration_and_thresholds.md`](file:///reports/remediation/calibration_and_thresholds.md) | Phase 5 — Balanced margin shift, calibration curve, alert semantics | Verified |
-| [`reports/remediation/rule_engine_audit.md`](file:///reports/remediation/rule_engine_audit.md) | Phase 6 — Overnight volume drop proof (99.81%), rule benchmarks | Verified |
-| [`reports/remediation/dataset_and_business_semantics.md`](file:///reports/remediation/dataset_and_business_semantics.md) | Phase 7 — PaySim simulator limits, exposure vs loss, double-counting | Verified |
-| [`reports/remediation/reproducibility_and_quality.md`](file:///reports/remediation/reproducibility_and_quality.md) | Phase 8 — Test fixtures, seed controls, environment, `.gitignore` hygiene | Verified |
-| [`reports/remediation/final_remediation_report.md`](file:///reports/remediation/final_remediation_report.md) | Phase 9 — Integrated validation synthesis & Dashboard Gate evaluation | Verified |
+| [`reports/remediation/baseline_audit.md`](baseline_audit.md) | Phase 0 — Environment, bundle audit, exact baseline reproduction | Verified |
+| [`reports/remediation/temporal_shift_analysis.md`](temporal_shift_analysis.md) | Phase 2 — Volume collapse mechanism, temporal ablations, diurnal cycles | Verified |
+| [`reports/remediation/feature_audit.md`](feature_audit.md) | Phase 3 — Post-transaction balance leakage, amount importance, encoding | Verified |
+| [`reports/remediation/shap_audit.md`](shap_audit.md) | Phase 4 — Exact additivity proof, reconciliation, grouped shares, non-causal | Verified |
+| [`reports/remediation/calibration_and_thresholds.md`](calibration_and_thresholds.md) | Phase 5 — Balanced margin shift, calibration curve, alert semantics | Verified |
+| [`reports/remediation/rule_engine_audit.md`](rule_engine_audit.md) | Phase 6 — Overnight volume drop proof (99.81%), rule benchmarks | Verified |
+| [`reports/remediation/dataset_and_business_semantics.md`](dataset_and_business_semantics.md) | Phase 7 — PaySim simulator limits, exposure vs loss, double-counting | Verified |
+| [`reports/remediation/reproducibility_and_quality.md`](reproducibility_and_quality.md) | Phase 8 — Test fixtures, seed controls, environment, `.gitignore` hygiene | Verified |
+| [`reports/remediation/final_remediation_report.md`](final_remediation_report.md) | Phase 9 — Integrated validation synthesis & Dashboard Gate evaluation | Verified |
 
 ---
 
@@ -146,18 +146,18 @@ All nine mandatory technical audit reports have been compiled, cross-referenced,
 
 | Gate Criterion | Verification Method | Result | Evidence / Reference |
 | :--- | :--- | :---: | :--- |
-| **1. Baseline Reproduction** | Re-run holdout evaluation with saved estimator bundle. | **PASSED** | Exact reproduction: AP $0.3836$, ROC $0.9185$, F1 $0.4583$ ([baseline_audit.md](file:///reports/remediation/baseline_audit.md)). |
-| **2. Threshold Discretization** | Audit grid resolution and evaluate fine candidates. | **PASSED** | Re-implemented 1,000-step grid; uncovered $t = 0.9830$ F1 peak vs $t = 0.9900$ alert-constrained ([calibration_and_thresholds.md](file:///reports/remediation/calibration_and_thresholds.md)). |
+| **1. Baseline Reproduction** | Re-run holdout evaluation with saved estimator bundle. | **PASSED** | Exact reproduction: AP $0.3836$, ROC $0.9185$, F1 $0.4583$ ([baseline_audit.md](baseline_audit.md)). |
+| **2. Threshold Discretization** | Audit grid resolution and evaluate fine candidates. | **PASSED** | Re-implemented 1,000-step grid; uncovered $t = 0.9830$ F1 peak vs $t = 0.9900$ alert-constrained ([calibration_and_thresholds.md](calibration_and_thresholds.md)). |
 | **3. Zero Holdout Leakage** | Verify threshold and preprocessing isolation on validation. | **PASSED** | Threshold search strictly uses validation partition; verified by automated tests. |
-| **4. Temporal Shift Measured** | Audit row counts and fraud rates across step intervals. | **PASSED** | Diagnosed 95% volume drop post-step 408; quantified 13x prevalence drift ([temporal_shift_analysis.md](file:///reports/remediation/temporal_shift_analysis.md)). |
-| **5. Feature Ablation Study** | Controlled training without temporal, amount, or rail features. | **PASSED** | 6 controlled ablations completed; proved `transaction_day` removal boosts Holdout AP to $0.4479$ ([ablation_experiment_results.json](file:///reports/remediation/ablation_experiment_results.json)). |
-| **6. Feature Leakage Audit** | Audit balance and future fields for lookahead. | **PASSED** | Proved balance fields represent post-authorization liquidation ($98.05\%$ zero-balance) ([feature_audit.md](file:///reports/remediation/feature_audit.md)). |
-| **7. Amount & Rail Analysis** | Correlation, distribution, and grouped contribution analysis. | **PASSED** | Grouped rail share $69.59\%$, Amount share $3.44\%$, dropping amount drops AP by $42.7\%$ ([shap_audit.md](file:///reports/remediation/shap_audit.md)). |
-| **8. SHAP Reproducibility** | Exact TreeSHAP additivity and sample verification. | **PASSED** | Additivity error $\le 1.34 \times 10^{-14}$; reconciled historical notes with holdout distribution ([shap_audit.md](file:///reports/remediation/shap_audit.md)). |
+| **4. Temporal Shift Measured** | Audit row counts and fraud rates across step intervals. | **PASSED** | Diagnosed 95% volume drop post-step 408; quantified 13x prevalence drift ([temporal_shift_analysis.md](temporal_shift_analysis.md)). |
+| **5. Feature Ablation Study** | Controlled training without temporal, amount, or rail features. | **PASSED** | 6 controlled ablations completed; proved `transaction_day` removal boosts Holdout AP to $0.4479$ ([ablation_experiment_results.json](ablation_experiment_results.json)). |
+| **6. Feature Leakage Audit** | Audit balance and future fields for lookahead. | **PASSED** | Proved balance fields represent post-authorization liquidation ($98.05\%$ zero-balance) ([feature_audit.md](feature_audit.md)). |
+| **7. Amount & Rail Analysis** | Correlation, distribution, and grouped contribution analysis. | **PASSED** | Grouped rail share $69.59\%$, Amount share $3.44\%$, dropping amount drops AP by $42.7\%$ ([shap_audit.md](shap_audit.md)). |
+| **8. SHAP Reproducibility** | Exact TreeSHAP additivity and sample verification. | **PASSED** | Additivity error $\le 1.34 \times 10^{-14}$; reconciled historical notes with holdout distribution ([shap_audit.md](shap_audit.md)). |
 | **9. Non-Causal Semantics** | Audit local explanation narrative templates. | **PASSED** | Local explanation code updated with isolated observed attributes and non-causal warnings. |
-| **10. Calibration Assessment** | Brier score, log-loss, and balanced margin shift analysis. | **PASSED** | Proved model outputs are uncalibrated ranking scores; established formal alert labels ([calibration_and_thresholds.md](file:///reports/remediation/calibration_and_thresholds.md)). |
-| **11. Rule Engine Integrity** | Verify overnight drop claim and benchmark metrics. | **PASSED** | Verified $99.81\%$ overnight drop; Rule Engine HIGH precision $72.04\%$ confirmed ([rule_engine_audit.md](file:///reports/remediation/rule_engine_audit.md)). |
-| **12. Financial Semantics** | Audit exposure calculation and double-counting. | **PASSED** | $\$12.06\text{B}$ gross exposure vs $\approx \$6.03\text{B}$ net economic loss documented ([dataset_and_business_semantics.md](file:///reports/remediation/dataset_and_business_semantics.md)). |
+| **10. Calibration Assessment** | Brier score, log-loss, and balanced margin shift analysis. | **PASSED** | Proved model outputs are uncalibrated ranking scores; established formal alert labels ([calibration_and_thresholds.md](calibration_and_thresholds.md)). |
+| **11. Rule Engine Integrity** | Verify overnight drop claim and benchmark metrics. | **PASSED** | Verified $99.81\%$ overnight drop; Rule Engine HIGH precision $72.04\%$ confirmed ([rule_engine_audit.md](rule_engine_audit.md)). |
+| **12. Financial Semantics** | Audit exposure calculation and double-counting. | **PASSED** | $\$12.06\text{B}$ gross exposure vs $\approx \$6.03\text{B}$ net economic loss documented ([dataset_and_business_semantics.md](dataset_and_business_semantics.md)). |
 | **13. Automated Test Suite** | Execute `py -m pytest tests/ -v`. | **PASSED** | **80 passed in 9.08s** (0 failed, 0 warnings). |
 | **14. Artifact Synchronization** | Cross-verify reports against machine JSONs. | **PASSED** | All metrics in Markdown reports match machine evaluation JSONs. |
 | **15. Frozen Holdout** | Final holdout evaluated once under frozen protocol. | **PASSED** | No post-hoc tuning or holdout optimization performed. |

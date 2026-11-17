@@ -1,5 +1,5 @@
 {
-  "model_artifact": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\models\\hist_gradient_boosting_no_day.joblib",
+  "model_artifact": "models/hist_gradient_boosting_no_day.joblib",
   "model_name": "HistGradientBoosting No Day",
   "feature_count": 8,
   "feature_names": [
@@ -973,7 +973,7 @@
     }
   ],
   "figures": {
-    "pr_curve_path": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\reports\\ml_improvement\\figures\\baseline_precision_recall_curve.png",
-    "sensitivity_curve_path": "C:\\Users\\samit\\OneDrive\\Desktop\\FinSight\\reports\\ml_improvement\\figures\\baseline_threshold_sensitivity.png"
+    "pr_curve_path": "reports/ml_improvement/figures/baseline_precision_recall_curve.png",
+    "sensitivity_curve_path": "reports/ml_improvement/figures/baseline_threshold_sensitivity.png"
   }
 }
